@@ -271,9 +271,12 @@
     }
 
     function renderTable(){
+      // Hide "Video Topic" from table display only
+      const displayHeaders = headers.filter(h => !/^video topic$/i.test(h));
+      
       const thead=document.createElement('thead');
       const trh=document.createElement('tr');
-      headers.forEach(h=>{
+      displayHeaders.forEach(h=>{
         const th=document.createElement('th');
         th.dataset.col=h;
         const isSorted = sortCol===h;
@@ -287,12 +290,12 @@
         trh.append(th);
       });
       thead.append(trh);
-
+      
       const tbody=document.createElement('tbody');
       view.forEach(r=>{
         const tr=document.createElement('tr');
         tr.onclick=()=>openPerson(r);
-        headers.forEach(h=>{
+        displayHeaders.forEach(h=>{
           const td=document.createElement('td');
           const val=r[h]||'';
           if(["Gender","Bus","Group","Group/Rooming","Room","Room Type","Video Group"].includes(h)){
