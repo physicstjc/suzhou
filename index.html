@@ -1,0 +1,394 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Student Table Viewer</title>
+  <style>
+    :root {
+      --bg:#f8fafc; --card:#ffffff; --text:#0f172a; --muted:#64748b; --brand:#2563eb;
+      --border:#e2e8f0; --shadow:0 6px 24px rgba(2,6,23,.06),0 2px 8px rgba(2,6,23,.05);
+    }
+    html,body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:var(--text);}
+    .wrap{max-width:1100px;margin:32px auto;padding:0 16px;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);}
+    .toolbar{display:grid;gap:12px;grid-template-columns:1.5fr repeat(4,1fr);padding:16px;align-items:center;}
+    .toolbar h1{grid-column:1/-1;font-size:20px;margin:0 0 4px 0;}
+    .toolbar .search-row{grid-column:1 / -1;display:flex;gap:8px;flex-wrap:wrap;}
+    input[type="text"],select{padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px;background:#fff;}
+    select{min-width:160px;}
+    .search{flex:1 1 280px;min-width:200px;}
+    button{appearance:none;border:1px solid var(--border);background:#fff;color:#0f172a;padding:10px 12px;border-radius:10px;font-size:14px;cursor:pointer;}
+    button:hover{border-color:#cbd5e1;}
+    .btn-primary{background:var(--brand);color:#fff;border-color:transparent;}
+    .filters{display:flex;flex-wrap:wrap;gap:12px;}
+    /* Smaller dropdowns inside filters */
+    .filters select {
+      padding: 6px 10px;
+      font-size: 13px;
+      border-radius: 8px;
+      min-width: 120px;
+    }
+
+    /* Wide screens: keep filters in a single row, align with actions */
+    @media (min-width: 900px) {
+      .filters {
+        grid-column: 1 / span 4;   /* span first 4 grid columns */
+        flex-wrap: nowrap;         /* force single row */
+        gap: 8px;                  /* slightly tighter spacing */
+        align-items: center;
+      }
+      .actions {
+        grid-column: 5 / span 1;   /* actions sit to the right */
+        width: auto;               /* avoid stretching */
+      }
+    }
+
+    .actions{display:flex;gap:8px;justify-content:flex-end;width:100%;}
+    .table-wrap{overflow:auto;border-top:1px solid var(--border);}
+    table{width:100%;border-collapse:separate;border-spacing:0;}
+    thead th{
+      position:sticky;
+      top:0;
+      background:#f1f5f9;
+      z-index:0;
+      font-weight:600;
+      color:#0f172a;
+      border-bottom:1px solid var(--border);
+      padding:12px;
+      text-align:left;
+      cursor:pointer;
+    }
+    tbody td{padding:12px;border-bottom:1px solid var(--border);color:#0f172a;}
+    tbody tr{background:#fff;}
+    tbody tr:hover{background:#f8fafc;}
+    .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;background:#eef2ff;color:#3730a3;}
+    .modal{position:fixed;inset:0;display:none;place-items:center;background:rgba(15,23,42,.35);backdrop-filter:saturate(140%) blur(4px);z-index:10;}
+    .modal.open{display:grid;}
+    .sheet{width:min(780px,calc(100% - 24px));background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;}
+    .sheet-header{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--border);}
+    .sheet-body{padding:18px;}
+    .kv{display:grid;grid-template-columns:180px 1fr;gap:8px 16px;}
+    .kv div{padding:8px 0;border-bottom:1px dashed #e5e7eb;}
+    @media (max-width: 720px){ .toolbar{grid-template-columns:1fr;} .filters{flex-direction:column;} .kv{grid-template-columns:120px 1fr;} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="toolbar">
+        <h1>Student Table Viewer</h1>
+        <div class="search-row">
+          <input id="search" class="search" type="text" placeholder="Search any field" />
+          <button id="clearSearch" aria-label="Clear search">✕</button>
+        </div>
+        <div class="filters">
+          <select id="filterTeacher"><option value="">Teacher</option></select>
+          <select id="filterRoom"><option value="">Room</option></select>
+          <select id="filterBus"><option value="">Bus</option></select>
+          <select id="filterVideo"><option value="">Video Group</option></select>
+        </div>
+        <div class="actions">
+          <button id="resetFilters">Reset</button>
+          <button id="downloadCsv" class="btn-primary">Download</button>
+        </div>
+      </div>
+      <div class="table-wrap"><table id="grid"></table></div>
+      <div style="padding:12px 16px;font-size:12px;color:#64748b"><span id="status">Loading…</span></div>
+    </div>
+  </div>
+
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="sheet" role="dialog" aria-modal="true">
+      <div class="sheet-header">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div id="avatar" style="width:64px;height:64px;border-radius:12px;background:#f1f5f9;display:grid;place-items:center;font-weight:700"></div>
+          <div>
+            <div id="personName" style="font-weight:700;font-size:18px"></div>
+            <div id="personSubtitle" style="color:#64748b"></div>
+          </div>
+        </div>
+        <button id="closeModal" aria-label="Close">×</button>
+      </div>
+      <div class="sheet-body"><div id="kv" class="kv"></div></div>
+    </div>
+  </div>
+
+  <script>
+    const DATA = [{"No.": "1", "Name": "CHERYL LAU EN HUI", "Group/Rooming": "1", "Room Type": "TRIPLE", "Teacher IC": "RIMIKO CHUAH LI MEI", "Bus": "2", "Gender": "F", "Video Group": "H", "Video Topic": "Day 4: Xingpu Experimental Middle School Day 1"}, {"No.": "2", "Name": "GAN MING HUI, JEMMA", "Group/Rooming": "1", "Room Type": "TRIPLE", "Teacher IC": "RIMIKO CHUAH LI MEI", "Bus": "2", "Gender": "F", "Video Group": "J", "Video Topic": "Day 6: Trip back + reflections."}, {"No.": "3", "Name": "ISABELLE NG JIA EN", "Group/Rooming": "1", "Room Type": "TRIPLE", "Teacher IC": "RIMIKO CHUAH LI MEI", "Bus": "2", "Gender": "F", "Video Group": "G", "Video Topic": "Day 3: Suzhou Industrial Park overview"}, {"No.": "4", "Name": "AMANDA WAN ZHENG MUN (WEN JINGWEN)", "Group/Rooming": "2", "Room Type": "TWIN", "Teacher IC": "RIMIKO CHUAH LI MEI", "Bus": "2", "Gender": "F", "Video Group": "F", "Video Topic": "Day 3: China Computer Federation"}, {"No.": "5", "Name": "ELLIE LOO YI HYUN (LU YIXUAN)", "Group/Rooming": "2", "Room Type": "TWIN", "Teacher IC": "RIMIKO CHUAH LI MEI", "Bus": "2", "Gender": "F", "Video Group": "D", "Video Topic": "Day 2: Harmony Times Square"}, {"No.": "6", "Name": "AMANDA YAP MANN YI", "Group/Rooming": "3", "Room Type": "TWIN", "Teacher IC": "RIMIKO CHUAH LI MEI", "Bus": "2", "Gender": "F", "Video Group": "A", "Video Topic": "Day 1: Shanghai to Suzhou, Pingjiang Road"}, {"No.": "7", "Name": "GRACE YEONG", "Group/Rooming": "3", "Room Type": "TWIN", "Teacher IC": "RIMIKO CHUAH LI MEI", "Bus": "2", "Gender": "F", "Video Group": "G", "Video Topic": "Day 3: Suzhou Industrial Park overview"}, {"No.": "8", "Name": "ANGEL TAN QIAN RUI", "Group/Rooming": "4", "Room Type": "TWIN", "Teacher IC": "TAN ZHEN ZHI", "Bus": "1", "Gender": "F", "Video Group": "C", "Video Topic": "Day 2: Suzhou Robotic Museum"}, {"No.": "9", "Name": "RENEE YONG HON MUN", "Group/Rooming": "4", "Room Type": "TWIN", "Teacher IC": "TAN ZHEN ZHI", "Bus": "1", "Gender": "F", "Video Group": "D", "Video Topic": "Day 2: Harmony Times Square"}, {"No.": "10", "Name": "CLARISA U JIE HUI (YU JIEHUI)", "Group/Rooming": "5", "Room Type": "TWIN", "Teacher IC": "TAN ZHEN ZHI", "Bus": "1", "Gender": "F", "Video Group": "J", "Video Topic": "Day 6: Trip back + reflections."}, {"No.": "11", "Name": "HENG ZI NING", "Group/Rooming": "5", "Room Type": "TWIN", "Teacher IC": "TAN ZHEN ZHI", "Bus": "1", "Gender": "F", "Video Group": "A", "Video Topic": "Day 1: Shanghai to Suzhou, Pingjiang Road"}, {"No.": "12", "Name": "CHEW SEE TING SHAUNA", "Group/Rooming": "6", "Room Type": "TWIN", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "F", "Video Topic": "Day 3: China Computer Federation"}, {"No.": "13", "Name": "GAY HSUAN SHING RACHEL (NI XUANQING)", "Group/Rooming": "6", "Room Type": "TWIN", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "G", "Video Topic": "Day 3: Suzhou Industrial Park overview"}, {"No.": "14", "Name": "CHLOE TYE LING SHAN (DAI LINGSHAN)", "Group/Rooming": "7", "Room Type": "TWIN", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "B", "Video Topic": "Day 2: Suzhou S&T Museum for Youth"}, {"No.": "15", "Name": "YONG JIA ZHEN", "Group/Rooming": "7", "Room Type": "TWIN", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "A", "Video Topic": "Day 1: Shanghai to Suzhou, Pingjiang Road"}, {"No.": "16", "Name": "CHOI YUN RU", "Group/Rooming": "8", "Room Type": "TRIPLE", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "C", "Video Topic": "Day 2: Suzhou Robotic Museum"}, {"No.": "17", "Name": "ISABELLE SOO EN QIN", "Group/Rooming": "8", "Room Type": "TRIPLE", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "A", "Video Topic": "Day 1: Shanghai to Suzhou, Pingjiang Road"}, {"No.": "18", "Name": "THE KE ING, MICHELLE TEDDYATMAJA", "Group/Rooming": "8", "Room Type": "TRIPLE", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "J", "Video Topic": "Day 6: Trip back + reflections."}, {"No.": "19", "Name": "DHWANI SRINIVASAN", "Group/Rooming": "9", "Room Type": "TWIN", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "H", "Video Topic": "Day 4: Xingpu Experimental Middle School Day 1"}, {"No.": "20", "Name": "SREEJITH HITA", "Group/Rooming": "9", "Room Type": "TWIN", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "C", "Video Topic": "Day 2: Suzhou Robotic Museum"}, {"No.": "21", "Name": "EMMA LEE SHYUAN EN", "Group/Rooming": "10", "Room Type": "TWIN", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "I", "Video Topic": "Day 5: Xingpu Experimental Middle School Day 2"}, {"No.": "22", "Name": "POH PAM (FU WENCI)", "Group/Rooming": "10", "Room Type": "TWIN", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "B", "Video Topic": "Day 2: Suzhou S&T Museum for Youth"}, {"No.": "23", "Name": "CHONG SAKI", "Group/Rooming": "11", "Room Type": "TWIN", "Teacher IC": "PENG CHAI TIN", "Bus": "2", "Gender": "F", "Video Group": "I", "Video Topic": "Day 5: Xingpu Experimental Middle School Day 2"}, {"No.": "24", "Name": "BETRYS TANG HUI YI", "Group/Rooming": "11", "Room Type": "TWIN", "Teacher IC": "PENG CHAI TIN", "Bus": "2", "Gender": "F", "Video Group": "E", "Video Topic": "Day 3: Suzhou Nanotechnology Industry Innovation Center"}, {"No.": "25", "Name": "GOH RUI EN, AUDREY", "Group/Rooming": "12", "Room Type": "TWIN", "Teacher IC": "PENG CHAI TIN", "Bus": "2", "Gender": "F", "Video Group": "B", "Video Topic": "Day 2: Suzhou S&T Museum for Youth"}, {"No.": "26", "Name": "PEH EE HSUEN MEREDITHE (BAI YUXUAN)", "Group/Rooming": "12", "Room Type": "TWIN", "Teacher IC": "PENG CHAI TIN", "Bus": "2", "Gender": "F", "Video Group": "I", "Video Topic": "Day 5: Xingpu Experimental Middle School Day 2"}, {"No.": "27", "Name": "CHIA XIAO HUI, ANNE", "Group/Rooming": "13", "Room Type": "TWIN", "Teacher IC": "PENG CHAI TIN", "Bus": "2", "Gender": "F", "Video Group": "E", "Video Topic": "Day 3: Suzhou Nanotechnology Industry Innovation Center"}, {"No.": "28", "Name": "GRACE THAM NGA SUM (TAN YAXIN)", "Group/Rooming": "13", "Room Type": "TWIN", "Teacher IC": "PENG CHAI TIN", "Bus": "2", "Gender": "F", "Video Group": "D", "Video Topic": "Day 2: Harmony Times Square"}, {"No.": "29", "Name": "LEONG YEAN NENG (LIANG ENNING)", "Group/Rooming": "14", "Room Type": "TWIN", "Teacher IC": "LIM JIA QI JACQUELINE", "Bus": "1", "Gender": "F", "Video Group": "C", "Video Topic": "Day 2: Suzhou Robotic Museum"}, {"No.": "30", "Name": "VINUDI NIHINSA GUNASEKARA", "Group/Rooming": "14", "Room Type": "TWIN", "Teacher IC": "LIM JIA QI JACQUELINE", "Bus": "1", "Gender": "F", "Video Group": "F", "Video Topic": "Day 3: China Computer Federation"}, {"No.": "31", "Name": "SARAH KOI AI LIN", "Group/Rooming": "15", "Room Type": "TWIN", "Teacher IC": "LIM JIA QI JACQUELINE", "Bus": "1", "Gender": "F", "Video Group": "J", "Video Topic": "Day 6: Trip back + reflections."}, {"No.": "32", "Name": "SARAH SIEW MIN EN", "Group/Rooming": "15", "Room Type": "TWIN", "Teacher IC": "LIM JIA QI JACQUELINE", "Bus": "1", "Gender": "F", "Video Group": "E", "Video Topic": "Day 3: Suzhou Nanotechnology Industry Innovation Center"}, {"No.": "33", "Name": "THONG XUAN NING, KAEDY", "Group/Rooming": "16", "Room Type": "TWIN", "Teacher IC": "LIM JIA QI JACQUELINE", "Bus": "1", "Gender": "F", "Video Group": "H", "Video Topic": "Day 4: Xingpu Experimental Middle School Day 1"}, {"No.": "34", "Name": "XENIA ISLA LOY JADE XYEE", "Group/Rooming": "16", "Room Type": "TWIN", "Teacher IC": "LIM JIA QI JACQUELINE", "Bus": "1", "Gender": "F", "Video Group": "D", "Video Topic": "Day 2: Harmony Times Square"}, {"No.": "35", "Name": "TRAN THUC LINH", "Group/Rooming": "17", "Room Type": "TWIN", "Teacher IC": "LIM JIA QI JACQUELINE", "Bus": "1", "Gender": "F", "Video Group": "I", "Video Topic": "Day 5: Xingpu Experimental Middle School Day 2"}, {"No.": "36", "Name": "YANG ZI JING JESSICA", "Group/Rooming": "17", "Room Type": "TWIN", "Teacher IC": "LIM JIA QI JACQUELINE", "Bus": "1", "Gender": "F", "Video Group": "B", "Video Topic": "Day 2: Suzhou S&T Museum for Youth"}, {"No.": "37", "Name": "HOON TAI FONG", "Group/Rooming": "18", "Room Type": "TWIN", "Teacher IC": "TAN SENG KWANG", "Bus": "2", "Gender": "M", "Video Group": "D", "Video Topic": "Day 2: Harmony Times Square"}, {"No.": "38", "Name": "SEE KAI LUN ETHAN (XU KAILUN)", "Group/Rooming": "18", "Room Type": "TWIN", "Teacher IC": "TAN SENG KWANG", "Bus": "2", "Gender": "M", "Video Group": "E", "Video Topic": "Day 3: Suzhou Nanotechnology Industry Innovation Center"}, {"No.": "39", "Name": "LIM ZI IAN", "Group/Rooming": "19", "Room Type": "TWIN", "Teacher IC": "TAN SENG KWANG", "Bus": "2", "Gender": "M", "Video Group": "C", "Video Topic": "Day 2: Suzhou Robotic Museum"}, {"No.": "40", "Name": "SIM EE HEAN, MATTHIEU (SHEN YIXIAN)", "Group/Rooming": "19", "Room Type": "TWIN", "Teacher IC": "TAN SENG KWANG", "Bus": "2", "Gender": "M", "Video Group": "F", "Video Topic": "Day 3: China Computer Federation"}, {"No.": "41", "Name": "BRION OW EN RUI", "Group/Rooming": "20", "Room Type": "TWIN", "Teacher IC": "TAN SENG KWANG", "Bus": "2", "Gender": "M", "Video Group": "A", "Video Topic": "Day 1: Shanghai to Suzhou, Pingjiang Road"}, {"No.": "42", "Name": "TAN JIA RUI LUCAS (CHEN JIARUI)", "Group/Rooming": "20", "Room Type": "TWIN", "Teacher IC": "TAN SENG KWANG", "Bus": "2", "Gender": "M", "Video Group": "F", "Video Topic": "Day 3: China Computer Federation"}, {"No.": "43", "Name": "ANAKIN PANG SHAO EN", "Group/Rooming": "21", "Room Type": "TWIN", "Teacher IC": "LOW KIAN SEH", "Bus": "1", "Gender": "M", "Video Group": "G", "Video Topic": "Day 3: Suzhou Industrial Park overview"}, {"No.": "44", "Name": "DANZEL JOSHUA MARIARAJA", "Group/Rooming": "21", "Room Type": "TWIN", "Teacher IC": "LOW KIAN SEH", "Bus": "1", "Gender": "M", "Video Group": "J", "Video Topic": "Day 6: Trip back + reflections."}, {"No.": "45", "Name": "BRYCE CHOO YOU TENG", "Group/Rooming": "22", "Room Type": "TWIN", "Teacher IC": "LOW KIAN SEH", "Bus": "1", "Gender": "M", "Video Group": "I", "Video Topic": "Day 5: Xingpu Experimental Middle School Day 2"}, {"No.": "46", "Name": "LEONG YUI HAN LUCAS (LIANG YUHAN)", "Group/Rooming": "22", "Room Type": "TWIN", "Teacher IC": "LOW KIAN SEH", "Bus": "1", "Gender": "M", "Video Group": "G", "Video Topic": "Day 3: Suzhou Industrial Park overview"}, {"No.": "47", "Name": "RYAN CHEN ZI XI", "Group/Rooming": "23", "Room Type": "TWIN", "Teacher IC": "LOW KIAN SEH", "Bus": "1", "Gender": "M", "Video Group": "H", "Video Topic": "Day 4: Xingpu Experimental Middle School Day 1"}, {"No.": "48", "Name": "SO PAK YU", "Group/Rooming": "23", "Room Type": "TWIN", "Teacher IC": "LOW KIAN SEH", "Bus": "1", "Gender": "M", "Video Group": "B", "Video Topic": "Day 2: Suzhou S&T Museum for Youth"}, {"No.": "49", "Name": "JAVIER TAN LE XUAN", "Group/Rooming": "24", "Room Type": "TWIN", "Teacher IC": "LOW KIAN SEH", "Bus": "1", "Gender": "M", "Video Group": "H", "Video Topic": "Day 4: Xingpu Experimental Middle School Day 1"}, {"No.": "50", "Name": "TAI KAI XUAN", "Group/Rooming": "24", "Room Type": "TWIN", "Teacher IC": "LOW KIAN SEH", "Bus": "1", "Gender": "M", "Video Group": "E", "Video Topic": "Day 3: Suzhou Nanotechnology Industry Innovation Center"}];
+
+    let headers=[],data=[],view=[];
+    let sortCol=null,sortDir=1;
+
+    const grid=document.getElementById('grid'),
+          statusEl=document.getElementById('status'),
+          searchEl=document.getElementById('search'),
+          clearSearchBtn=document.getElementById('clearSearch'),
+          downloadCsvBtn=document.getElementById('downloadCsv'),
+          resetFiltersBtn=document.getElementById('resetFilters'),
+          filterTeacher=document.getElementById('filterTeacher'),
+          filterRoom=document.getElementById('filterRoom'),
+          filterBus=document.getElementById('filterBus'),
+          filterVideo=document.getElementById('filterVideo'),
+          modal=document.getElementById('modal'),
+          closeModal=document.getElementById('closeModal'),
+          kv=document.getElementById('kv'),
+          personName=document.getElementById('personName'),
+          personSubtitle=document.getElementById('personSubtitle'),
+          avatar=document.getElementById('avatar');
+
+    function init(){
+      data = DATA;
+      headers = data.length ? Object.keys(data[0]) : [];
+      // Remove "No" / "No." from headers
+      headers = headers.filter(h => !/^no\.?$/i.test(h));
+      view = data.slice();
+      buildFilters();
+      applyFiltersAndSearch();
+    }
+
+    function buildFilters(){
+      const teacherCol = findColumn(['teacher ic','teacher']);
+      const roomCol    = findColumn(['room number','group/rooming','room']); // fallback to Group/Rooming if no Room Number
+      const busCol     = findColumn(['bus']);
+      const videoCol   = findColumn(['video group','video']);
+      populateSelect(filterTeacher, teacherCol, 'Teacher');
+      populateSelect(filterRoom, roomCol, 'Room');
+      populateSelect(filterBus, busCol, 'Bus');
+      populateSelect(filterVideo, videoCol, 'Video Group');
+    }
+
+    function findColumn(candidates){
+      const lower = headers.map(h => [h, h.toLowerCase()]);
+      for(const cand of candidates){
+        const hit = lower.find(([orig,lo]) => lo === cand);
+        if(hit) return hit[0];
+      }
+      for(const cand of candidates){
+        const hit = lower.find(([orig,lo]) => lo.includes(cand));
+        if(hit) return hit[0];
+      }
+      return null;
+    }
+
+    function populateSelect(sel, col, label){
+      sel.innerHTML = `<option value="">${label}</option>`;
+      sel.disabled = !col;
+      sel.dataset.col = col || '';
+      if(!col) return;
+      const values = [...new Set(data.map(r => (r[col]||'').toString().trim()).filter(Boolean))]
+        .sort((a,b)=>a.localeCompare(b, undefined, {numeric:true, sensitivity:'base'}));
+      for(const v of values){
+        const o=document.createElement('option');
+        o.value=v; o.textContent=v; sel.appendChild(o);
+      }
+    }
+
+    function applyFiltersAndSearch(){
+      const q=searchEl.value.trim().toLowerCase();
+      const filters=[filterTeacher,filterRoom,filterBus,filterVideo].filter(s=>s && s.dataset.col);
+      view=data.filter(r=>{
+        const matchSearch=!q||headers.some(h=>(r[h]||'').toString().toLowerCase().includes(q));
+        if(!matchSearch) return false;
+        for(const f of filters){
+          const col=f.dataset.col,val=f.value;
+          if(val && (r[col]||'').toString().trim()!==val) return false;
+        }
+        return true;
+      });
+      sortAndRender();
+      statusEl.textContent=`${view.length} of ${data.length} records shown`;
+    }
+
+    function sortAndRender(){
+      if(sortCol){
+        view.sort((a,b)=>{
+          const av=(a[sortCol]||'').toString(), bv=(b[sortCol]||'').toString();
+          const an=parseFloat(av.replace(/[^0-9.-]/g,'')), bn=parseFloat(bv.replace(/[^0-9.-]/g,''));
+          const num=!isNaN(an)&&!isNaN(bn);
+          return (num? an-bn : av.localeCompare(bv, undefined, {numeric:true, sensitivity:'base'})) * sortDir;
+        });
+      }
+      renderTable();
+    }
+
+    function renderTable(){
+      const thead=document.createElement('thead');
+      const trh=document.createElement('tr');
+      headers.forEach(h=>{
+        const th=document.createElement('th');
+        th.dataset.col=h;
+        const isSorted = sortCol===h;
+        const ind = isSorted ? (sortDir===1 ? ' ▲' : ' ▼') : '';
+        const label = h === 'Group/Rooming' ? 'Room' : h;
+        th.textContent = label + ind;
+        th.onclick=()=>{
+          if(sortCol===h){ sortDir = -sortDir; } else { sortCol = h; sortDir = 1; }
+          sortAndRender();
+        };
+        trh.append(th);
+      });
+      thead.append(trh);
+
+      const tbody=document.createElement('tbody');
+      view.forEach(r=>{
+        const tr=document.createElement('tr');
+        tr.onclick=()=>openPerson(r);
+        headers.forEach(h=>{
+          const td=document.createElement('td');
+          const val=r[h]||'';
+          if(["Gender","Bus","Group","Group/Rooming","Room","Room Type","Video Group"].includes(h)){
+            const tag=document.createElement('span'); tag.className='pill'; tag.textContent=val; td.append(tag);
+          } else { td.textContent=val; }
+          tr.append(td);
+        });
+        tbody.append(tr);
+      });
+      grid.innerHTML='';
+      grid.append(thead,tbody);
+    }
+
+    function openPerson(r){
+      const nameKey=headers.find(h=>/^name$/i.test(h))||headers[0];
+      const subKey=headers.find(h=>/(group\/rooming|room|teacher ic|video group)/i);
+      personName.textContent=r[nameKey]||'(No name)';
+      personSubtitle.textContent=subKey?`${subKey}: ${r[subKey]}`:'';
+      avatar.textContent=(r[nameKey]||'').split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase();
+      kv.innerHTML='';
+      headers.forEach(h=>{ kv.innerHTML += `<div>${h}</div><div>${r[h]||''}</div>`; });
+      modal.classList.add('open'); modal.setAttribute('aria-hidden','false');
+    }
+    function closePerson(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
+    modal.onclick=e=>{ if(e.target===modal) closePerson(); };
+    closeModal.onclick=closePerson;
+
+    searchEl.addEventListener('input',applyFiltersAndSearch);
+    clearSearchBtn.addEventListener('click',()=>{ searchEl.value=''; applyFiltersAndSearch(); });
+    [filterTeacher,filterRoom,filterBus,filterVideo].forEach(s=> s.addEventListener('change', applyFiltersAndSearch));
+    resetFiltersBtn.addEventListener('click',()=>{ searchEl.value=''; [filterTeacher,filterRoom,filterBus,filterVideo].forEach(s=> s.value=''); applyFiltersAndSearch(); });
+    // Remove stale Apply listener to avoid pre-init errors
+    // refreshBtn.addEventListener('click',applyFiltersAndSearch);
+    if (downloadCsvBtn) {
+      downloadCsvBtn.addEventListener('click', () => {
+        const csv = buildFilteredCsv();
+        if (!csv.trim()) { alert('No records to export.'); return; }
+        downloadCsvFile('students_filtered.csv', csv);
+      });
+    }
+
+    init();
+
+
+    function escapeCsv(value) {
+      if (value === null || value === undefined) return '';
+      const v = String(value).replace(/"/g, '""');
+      return /[",\n]/.test(v) ? `"${v}"` : v;
+    }
+
+    function buildFilteredCsv() {
+      const headerLabels = headers.map(h => h === 'Group/Rooming' ? 'Room' : h);
+      const lines = [];
+      if (headerLabels.length) lines.push(headerLabels.map(escapeCsv).join(','));
+      for (const r of view) {
+        const row = headers.map(h => escapeCsv((r[h]||'').toString().trim()));
+        lines.push(row.join(','));
+      }
+      return lines.join('\n');
+    }
+
+    function downloadCsvFile(filename, text) {
+      const bom = '\uFEFF'; // improve Excel/Safari handling
+      const blob = new Blob([bom + text], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename.endsWith('.csv') ? filename : `${filename}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 0);
+    }
+
+    function getTargetTable() {
+        // Prefer a known ID; otherwise fall back to the first table
+        return document.querySelector('#student-table') || document.querySelector('table');
+    }
+
+    function getVisibleRows(table) {
+        const rows = Array.from(table.querySelectorAll('tbody tr'));
+        return rows.filter(row => {
+            const style = window.getComputedStyle(row);
+            return !row.hidden &&
+                style.display !== 'none' &&
+                style.visibility !== 'hidden' &&
+                row.offsetParent !== null;
+        });
+    }
+
+    function getHeaders(table) {
+        const ths = Array.from(table.querySelectorAll('thead th'));
+        let headers = ths.map(th => th.textContent.trim());
+        if (headers.length === 0) {
+            // Fallback: synthesize headers based on first row cell count
+            const firstRow = table.querySelector('tbody tr');
+            if (firstRow) {
+                const count = firstRow.children.length;
+                headers = Array.from({ length: count }, (_, i) => `Column ${i + 1}`);
+            }
+        }
+        return headers;
+    }
+
+    function buildCsv(table) {
+        const headers = getHeaders(table);
+        const visibleRows = getVisibleRows(table);
+
+        const lines = [];
+        if (headers.length) {
+            lines.push(headers.map(escapeCsv).join(','));
+        }
+
+        for (const row of visibleRows) {
+            const cells = Array.from(row.children).map(td => escapeCsv(td.textContent.trim()));
+            lines.push(cells.join(','));
+        }
+
+        return lines.join('\n');
+    }
+
+    function downloadCsv(filename, csvText) {
+        const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 0);
+    }
+
+    const btn = document.getElementById('downloadCsvBtn');
+    if (btn) {
+        btn.addEventListener('click', function () {
+            const table = getTargetTable();
+            if (!table) {
+                alert('No table found to export. Please ensure the list is in a <table>.');
+                return;
+            }
+            const csv = buildCsv(table);
+            if (!csv.trim()) {
+                alert('No visible rows to export.');
+                return;
+            }
+            downloadCsv('students_filtered.csv', csv);
+        });
+    };
+    </script>
+</body>
+</html>
