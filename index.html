@@ -145,6 +145,7 @@
       headers = headers.filter(h => !/^no\.?$/i.test(h));
       view = data.slice();
       buildFilters();
+      bindFilterEvents(); // enforce single-active filter per dropdown
       applyFiltersAndSearch();
     }
 
@@ -389,6 +390,80 @@
             downloadCsv('students_filtered.csv', csv);
         });
     };
+
+
+
+// Ensure a select has the given value; add the option if missing
+function setSelectValue(sel, value) {
+    const exists = Array.from(sel.options).some(o => o.value === value);
+    if (!exists) {
+        const o = document.createElement('option');
+        o.value = value;
+        o.textContent = value;
+        sel.appendChild(o);
+    }
+    sel.value = value;
+}
+
+// Clear all dropdown filters except the one being changed
+function resetFiltersExcept(keepSel){
+    [filterTeacher, filterRoom, filterBus, filterVideo].forEach(s => {
+        if (s && s !== keepSel) s.value = '';
+    });
+    // If you also want search cleared on dropdown change, uncomment:
+    // searchEl.value = '';
+}
+
+// Bind dropdown change events to enforce single-active filter
+function bindFilterEvents(){
+    const selects = [filterTeacher, filterRoom, filterBus, filterVideo].filter(Boolean);
+
+    // If previously bound to applyFiltersAndSearch directly, remove that binding
+    for (const sel of selects){
+        try { sel.removeEventListener('change', applyFiltersAndSearch); } catch {}
+        sel.addEventListener('change', handleFilterChange);
+    }
+}
+
+// Handle a dropdown change: clear others, then apply filtering
+function handleFilterChange(e){
+    const sel = e.currentTarget;
+    resetFiltersExcept(sel);
+    applyFiltersAndSearch();
+}
+
+// Make modal labels clickable to apply the corresponding filter
+kv.addEventListener('click', (e) => {
+    const div = e.target.closest('div');
+    if (!div || !kv.contains(div)) return;
+
+    // Treat only label clicks (left column) by matching known labels
+    const label = div.textContent.trim().toLowerCase();
+    const valueDiv = div.nextElementSibling;
+    if (!valueDiv) return;
+
+    const value = valueDiv.textContent.trim();
+    let targetSel = null;
+
+    if (label === 'teacher ic' || label === 'teacher') {
+        targetSel = filterTeacher;
+    } else if (label === 'room' || label === 'group/rooming' || label === 'room number') {
+        targetSel = filterRoom;
+    } else if (label === 'bus') {
+        targetSel = filterBus;
+    } else if (label === 'video group' || label === 'video') {
+        targetSel = filterVideo;
+    }
+
+    if (!targetSel || !targetSel.dataset.col) return;
+
+    resetFiltersExcept(targetSel);
+    setSelectValue(targetSel, value);
+    applyFiltersAndSearch();
+
+    // Close modal after applying the filter
+    modal.classList.remove('open');
+});
     </script>
 </body>
 </html>
