@@ -72,6 +72,62 @@
     .kv{display:grid;grid-template-columns:180px 1fr;gap:8px 16px;}
     .kv div{padding:8px 0;border-bottom:1px dashed #e5e7eb;}
     @media (max-width: 720px){ .toolbar{grid-template-columns:1fr;} .filters{flex-direction:column;} .kv{grid-template-columns:120px 1fr;} }
+
+    /* Medium screens: mild shrink */
+    @media (max-width: 900px) {
+      html, body { font-size: 15px; }
+      .toolbar h1 { font-size: 18px; }
+      input[type="text"], select { padding: 8px 10px; font-size: 13px; }
+      button { padding: 8px 10px; font-size: 13px; }
+      thead th { padding: 10px; font-size: 14px; }
+      tbody td { padding: 10px; font-size: 14px; }
+      .sheet { width: min(720px, calc(100% - 20px)); }
+    }
+
+    /* Small screens: stronger shrink */
+    @media (max-width: 720px) {
+      html, body { font-size: 14px; }
+      .toolbar h1 { font-size: 17px; }
+      /* .toolbar { grid-template-columns: 1fr; } */ /* Already defined above */
+      /* .filters { flex-direction: column; gap: 8px; } */ /* Already defined above */
+      input[type="text"], select { padding: 8px 10px; font-size: 12px; }
+      select { min-width: 100px; }
+      .search { min-width: 160px; }
+      button { padding: 8px 10px; font-size: 12px; }
+      thead th { padding: 8px; font-size: 13px; }
+      tbody td { padding: 8px; font-size: 13px; word-break: break-word; hyphens: auto; }
+      .pill { font-size: 12px; padding: 2px 6px; }
+      .sheet-header { padding: 12px 14px; }
+      .sheet-body { padding: 14px; }
+      /* .kv { grid-template-columns: 120px 1fr; } */ /* Already defined above */
+      #status { font-size: 11px; }
+      #avatar { width: 52px; height: 52px; }
+    }
+
+    /* Very small screens: tight compact mode */
+    @media (max-width: 480px) {
+      html, body { font-size: 13px; }
+      .toolbar h1 { font-size: 16px; }
+      input[type="text"], select { padding: 6px 8px; font-size: 11px; }
+      .search { min-width: 140px; }
+      button { padding: 6px 8px; font-size: 11px; }
+      thead th { padding: 6px; font-size: 12px; }
+      tbody td { padding: 6px; font-size: 12px; }
+      .pill { font-size: 11px; padding: 1px 6px; }
+      .sheet { width: min(640px, calc(100% - 16px)); }
+      .sheet-header { padding: 10px 12px; }
+      .sheet-body { padding: 12px; }
+      #avatar { width: 44px; height: 44px; }
+    }
+
+    /* Ultra-small screens: minimal */
+    @media (max-width: 360px) {
+      html, body { font-size: 12px; }
+      .toolbar h1 { font-size: 15px; }
+      .kv { grid-template-columns: 100px 1fr; }
+      thead th, tbody td { word-break: break-word; hyphens: auto; }
+      #avatar { width: 36px; height: 36px; }
+    }
   </style>
 </head>
 <body>
