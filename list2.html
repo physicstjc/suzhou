@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Student Table Viewer</title>
+  <style>
+    :root {
+      --bg:#f8fafc; --card:#ffffff; --text:#0f172a; --muted:#64748b; --brand:#2563eb;
+      --border:#e2e8f0; --shadow:0 6px 24px rgba(2,6,23,.06),0 2px 8px rgba(2,6,23,.05);
+    }
+    html,body{
+      margin:0;
+      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      background:var(--bg);
+      color:var(--text);
+    }
+    .wrap{max-width:1100px;margin:32px auto;padding:0 16px;}
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+    }
+    .toolbar{
+      display:grid;
+      gap:12px;
+      grid-template-columns:1.5fr repeat(4,1fr);
+      padding:16px;
+      align-items:center;
+    }
+    .toolbar h1{
+      grid-column:1/-1;
+      font-size:20px;
+      margin:0 0 4px 0;
+    }
+    .toolbar .search-row{
+      grid-column:1 / -1;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    input[type="text"],select{
+      padding:10px 12px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      font-size:14px;
+      background:#fff;
+    }
+    select{min-width:160px;}
+    .search{flex:1 1 280px;min-width:200px;}
+    button{
+      appearance:none;
+      border:1px solid var(--border);
+      background:#fff;
+      color:#0f172a;
+      padding:10px 12px;
+      border-radius:10px;
+      font-size:14px;
+      cursor:pointer;
+    }
+    button:hover{border-color:#cbd5e1;}
+    .btn-primary{background:var(--brand);color:#fff;border-color:transparent;}
+    .filters{display:flex;flex-wrap:wrap;gap:12px;}
+    .filters select{
+      padding:6px 10px;
+      font-size:13px;
+      border-radius:8px;
+      min-width:120px;
+    }
+
+    @media (min-width: 900px) {
+      .filters {
+        grid-column: 1 / span 4;
+        flex-wrap: nowrap;
+        gap: 8px;
+        align-items: center;
+      }
+      .actions {
+        grid-column: 5 / span 1;
+        width: auto;
+      }
+    }
+
+    .actions{
+      display:flex;
+      gap:8px;
+      justify-content:flex-end;
+      width:100%;
+    }
+    .table-wrap{overflow:auto;border-top:1px solid var(--border);}
+    table{width:100%;border-collapse:separate;border-spacing:0;}
+    thead th{
+      position:sticky;
+      top:0;
+      background:#f1f5f9;
+      z-index:0;
+      font-weight:600;
+      color:#0f172a;
+      border-bottom:1px solid var(--border);
+      padding:12px;
+      text-align:left;
+      cursor:pointer;
+    }
+    tbody td{
+      padding:12px;
+      border-bottom:1px solid var(--border);
+      color:#0f172a;
+    }
+    tbody tr{background:#fff;}
+    tbody tr:hover{background:#f8fafc;}
+    .pill{
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:12px;
+      background:#eef2ff;
+      color:#3730a3;
+    }
+    .modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      place-items:center;
+      background:rgba(15,23,42,.35);
+      backdrop-filter:saturate(140%) blur(4px);
+      z-index:10;
+    }
+    .modal.open{display:grid;}
+    .sheet{
+      width:min(780px,calc(100% - 24px));
+      background:#fff;
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .sheet-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:16px 18px;
+      border-bottom:1px solid var(--border);
+    }
+    .sheet-body{padding:18px;}
+    .kv{
+      display:grid;
+      grid-template-columns:180px 1fr;
+      gap:8px 16px;
+    }
+    .kv div{
+      padding:8px 0;
+      border-bottom:1px dashed #e5e7eb;
+    }
+    @media (max-width: 720px){
+      .toolbar{grid-template-columns:1fr;}
+      .filters{flex-direction:column;}
+      .kv{grid-template-columns:120px 1fr;}
+    }
+
+    @media (max-width: 900px) {
+      html, body { font-size: 15px; }
+      .toolbar h1 { font-size: 18px; }
+      input[type="text"], select { padding: 8px 10px; font-size: 13px; }
+      button { padding: 8px 10px; font-size: 13px; }
+      thead th { padding: 10px; font-size: 14px; }
+      tbody td { padding: 10px; font-size: 14px; }
+      .sheet { width: min(720px, calc(100% - 20px)); }
+    }
+
+    @media (max-width: 720px) {
+      html, body { font-size: 14px; }
+      .toolbar h1 { font-size: 17px; }
+      input[type="text"], select { padding: 8px 10px; font-size: 12px; }
+      select { min-width: 100px; }
+      .search { min-width: 160px; }
+      button { padding: 8px 10px; font-size: 12px; }
+      thead th { padding: 8px; font-size: 13px; }
+      tbody td { padding: 8px; font-size: 13px; word-break: break-word; hyphens: auto; }
+      .pill { font-size: 12px; padding: 2px 6px; }
+      .sheet-header { padding: 12px 14px; }
+      .sheet-body { padding: 14px; }
+      #status { font-size: 11px; }
+      #avatar { width: 52px; height: 52px; }
+    }
+
+    @media (max-width: 480px) {
+      html, body { font-size: 13px; }
+      .toolbar h1 { font-size: 16px; }
+      input[type="text"], select { padding: 6px 8px; font-size: 11px; }
+      .search { min-width: 140px; }
+      button { padding: 6px 8px; font-size: 11px; }
+      thead th { padding: 6px; font-size: 12px; }
+      tbody td { padding: 6px; font-size: 12px; }
+      .pill { font-size: 11px; padding: 1px 6px; }
+      .sheet { width: min(640px, calc(100% - 16px)); }
+      .sheet-header { padding: 10px 12px; }
+      .sheet-body { padding: 12px; }
+      #avatar { width: 44px; height: 44px; }
+    }
+
+    @media (max-width: 360px) {
+      html, body { font-size: 12px; }
+      .toolbar h1 { font-size: 15px; }
+      .kv { grid-template-columns: 100px 1fr; }
+      thead th, tbody td { word-break: break-word; hyphens: auto; }
+      #avatar { width: 36px; height: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="toolbar">
+        <h1>Student Table Viewer</h1>
+        <div class="search-row">
+          <input id="search" class="search" type="text" placeholder="Search any field" />
+          <button id="clearSearch" aria-label="Clear search">✕</button>
+        </div>
+        <div class="filters">
+          <select id="filterTeacher"><option value="">Teacher</option></select>
+          <select id="filterRoom"><option value="">Room</option></select>
+          <select id="filterBus"><option value="">Bus</option></select>
+          <select id="filterVideo"><option value="">Video Group</option></select>
+        </div>
+        <div class="actions">
+          <button id="resetFilters">Reset</button>
+          <button id="downloadCsv" class="btn-primary">Download</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="grid"></table>
+      </div>
+      <div style="padding:12px 16px;font-size:12px;color:#64748b">
+        <span id="status">Loading…</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="sheet" role="dialog" aria-modal="true">
+      <div class="sheet-header">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div id="avatar" style="width:64px;height:64px;border-radius:12px;background:#f1f5f9;display:grid;place-items:center;font-weight:700"></div>
+          <div>
+            <div id="personName" style="font-weight:700;font-size:18px"></div>
+            <div id="personSubtitle" style="color:#64748b"></div>
+          </div>
+        </div>
+        <button id="closeModal" aria-label="Close">×</button>
+      </div>
+      <div class="sheet-body">
+        <div id="kv" class="kv"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // === CONFIG: your Google Sheet ===
+    const SHEET_ID = '1T2vjcb48ucUAlZL-9QIUa2FqyKpTvF5uGN9CC62GyYY';
+    const SHEET_GID = '0'; // tab gid
+
+    // === State ===
+    let headers = [];
+    let data = [];
+    let view = [];
+    let sortCol = null;
+    let sortDir = 1;
+
+    // === DOM ===
+    const grid = document.getElementById('grid');
+    const statusEl = document.getElementById('status');
+    const searchEl = document.getElementById('search');
+    const clearSearchBtn = document.getElementById('clearSearch');
+    const downloadCsvBtn = document.getElementById('downloadCsv');
+    const resetFiltersBtn = document.getElementById('resetFilters');
+    const filterTeacher = document.getElementById('filterTeacher');
+    const filterRoom = document.getElementById('filterRoom');
+    const filterBus = document.getElementById('filterBus');
+    const filterVideo = document.getElementById('filterVideo');
+    const modal = document.getElementById('modal');
+    const closeModal = document.getElementById('closeModal');
+    const kv = document.getElementById('kv');
+    const personName = document.getElementById('personName');
+    const personSubtitle = document.getElementById('personSubtitle');
+    const avatar = document.getElementById('avatar');
+
+    // === Load from Google Sheet (gviz JSON) ===
+    async function loadDataFromSheet() {
+      const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?`;
+      const url = `${base}tqx=out:json&gid=${SHEET_GID}`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error('HTTP ' + res.status);
+      }
+      const text = await res.text();
+
+      // Strip JSONP wrapper: google.visualization.Query.setResponse(...)
+      const jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+      const json = JSON.parse(jsonStr);
+
+      const cols = json.table.cols.map(c => (c.label || c.id || '').trim());
+
+      const rows = json.table.rows.map(row => {
+        const obj = {};
+        cols.forEach((colName, i) => {
+          if (!colName) return;
+          const cell = row.c[i];
+          obj[colName] = (cell && cell.v != null) ? cell.v : '';
+        });
+        return obj;
+      });
+
+      // Filter out completely empty rows (e.g. trailing blanks)
+      return rows.filter(r =>
+        Object.values(r).some(v => v !== '' && v !== null && v !== undefined)
+      );
+    }
+
+    async function init() {
+      try {
+        statusEl.textContent = 'Loading from Google Sheet…';
+
+        data = await loadDataFromSheet();
+        if (!data.length) {
+          throw new Error('No data rows returned from sheet');
+        }
+
+        headers = Object.keys(data[0]) || [];
+
+        // Remove "No" / "No." if present
+        headers = headers.filter(h => !/^no\.?$/i.test(h));
+
+        view = data.slice();
+        buildFilters();
+        bindFilterEvents();
+        applyFiltersAndSearch();
+
+        statusEl.textContent =
+          `${view.length} of ${data.length} records shown (live from Google Sheet)`;
+      } catch (err) {
+        console.error('Sheet load error:', err);
+        statusEl.textContent =
+          '⚠️ Unable to load from Google Sheet. Check sharing settings (Anyone with the link can view).';
+      }
+    }
+
+    // === Filters & Search ===
+    function buildFilters() {
+      const teacherCol = findColumn(['teacher ic','teacher']);
+      const roomCol    = findColumn(['room number','group/rooming','room']);
+      const busCol     = findColumn(['bus']);
+      const videoCol   = findColumn(['video group','video']);
+
+      populateSelect(filterTeacher, teacherCol, 'Teacher');
+      populateSelect(filterRoom,    roomCol,    'Room');
+      populateSelect(filterBus,     busCol,     'Bus');
+      populateSelect(filterVideo,   videoCol,   'Video Group');
+    }
+
+    function findColumn(candidates) {
+      const lower = headers.map(h => [h, h.toLowerCase()]);
+      for (const cand of candidates) {
+        const hit = lower.find(([orig, lo]) => lo === cand);
+        if (hit) return hit[0];
+      }
+      for (const cand of candidates) {
+        const hit = lower.find(([orig, lo]) => lo.includes(cand));
+        if (hit) return hit[0];
+      }
+      return null;
+    }
+
+    function populateSelect(sel, col, label) {
+      sel.innerHTML = `<option value="">${label}</option>`;
+      sel.disabled = !col;
+      sel.dataset.col = col || '';
+      if (!col) return;
+
+      const values = [...new Set(
+        data.map(r => (r[col] || '').toString().trim()).filter(Boolean)
+      )].sort((a,b)=>a.localeCompare(b, undefined, {numeric:true, sensitivity:'base'}));
+
+      for (const v of values) {
+        const o = document.createElement('option');
+        o.value = v;
+        o.textContent = v;
+        sel.appendChild(o);
+      }
+    }
+
+    function applyFiltersAndSearch() {
+      if (!data.length) return;
+      const q = searchEl.value.trim().toLowerCase();
+      const filters = [filterTeacher, filterRoom, filterBus, filterVideo]
+        .filter(s => s && s.dataset.col);
+
+      view = data.filter(r => {
+        const matchSearch = !q || headers.some(h =>
+          (r[h] || '').toString().toLowerCase().includes(q)
+        );
+        if (!matchSearch) return false;
+
+        for (const f of filters) {
+          const col = f.dataset.col;
+          const val = f.value;
+          if (val && (r[col] || '').toString().trim() !== val) return false;
+        }
+        return true;
+      });
+
+      sortAndRender();
+      statusEl.textContent =
+        `${view.length} of ${data.length} records shown (live from Google Sheet)`;
+    }
+
+    // === Sorting & Table Render ===
+    function sortAndRender() {
+      if (sortCol) {
+        view.sort((a,b) => {
+          const av = (a[sortCol] || '').toString();
+          const bv = (b[sortCol] || '').toString();
+          const an = parseFloat(av.replace(/[^0-9.-]/g,''));
+          const bn = parseFloat(bv.replace(/[^0-9.-]/g,''));
+          const num = !isNaN(an) && !isNaN(bn);
+          return (num ? an - bn : av.localeCompare(bv, undefined, {numeric:true, sensitivity:'base'})) * sortDir;
+        });
+      }
+      renderTable();
+    }
+
+    function renderTable() {
+      const displayHeaders = headers.filter(h => !/^video topic$/i.test(h));
+
+      const thead = document.createElement('thead');
+      const trh = document.createElement('tr');
+
+      displayHeaders.forEach(h => {
+        const th = document.createElement('th');
+        th.dataset.col = h;
+        const isSorted = sortCol === h;
+        const ind = isSorted ? (sortDir === 1 ? ' ▲' : ' ▼') : '';
+        const label = h === 'Group/Rooming' ? 'Room' : h;
+        th.textContent = label + ind;
+        th.onclick = () => {
+          if (sortCol === h) {
+            sortDir = -sortDir;
+          } else {
+            sortCol = h;
+            sortDir = 1;
+          }
+          sortAndRender();
+        };
+        trh.appendChild(th);
+      });
+
+      thead.appendChild(trh);
+
+      const tbody = document.createElement('tbody');
+      view.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.onclick = () => openPerson(r);
+        displayHeaders.forEach(h => {
+          const td = document.createElement('td');
+          const val = r[h] || '';
+          if (["Gender","Bus","Group","Group/Rooming","Room","Room Type","Video Group"].includes(h)) {
+            const tag = document.createElement('span');
+            tag.className = 'pill';
+            tag.textContent = val;
+            td.appendChild(tag);
+          } else {
+            td.textContent = val;
+          }
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+
+      grid.innerHTML = '';
+      grid.appendChild(thead);
+      grid.appendChild(tbody);
+    }
+
+    // === Modal / Detail View ===
+    function openPerson(r) {
+      const nameKey = headers.find(h => /^name$/i.test(h)) || headers[0];
+      const subKey = headers.find(h => /(group\/rooming|room|teacher ic|video group)/i);
+
+      personName.textContent = r[nameKey] || '(No name)';
+      personSubtitle.textContent = subKey ? `${subKey}: ${r[subKey]}` : '';
+      avatar.textContent = (r[nameKey] || '')
+        .split(/\s+/)
+        .map(x => x[0])
+        .slice(0,2)
+        .join('')
+        .toUpperCase();
+
+      kv.innerHTML = '';
+      headers.forEach(h => {
+        kv.innerHTML += `<div>${h}</div><div>${r[h] || ''}</div>`;
+      });
+
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden','false');
+    }
+
+    function closePerson() {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+    }
+
+    modal.addEventListener('click', e => {
+      if (e.target === modal) closePerson();
+    });
+    closeModal.addEventListener('click', closePerson);
+
+    // === CSV Export (current filtered view) ===
+    function escapeCsv(value) {
+      if (value === null || value === undefined) return '';
+      const v = String(value).replace(/"/g, '""');
+      return /[",\n]/.test(v) ? `"${v}"` : v;
+    }
+
+    function buildFilteredCsv() {
+      if (!headers.length) return '';
+      const headerLabels = headers.map(h => h === 'Group/Rooming' ? 'Room' : h);
+      const lines = [];
+      lines.push(headerLabels.map(escapeCsv).join(','));
+
+      for (const r of view) {
+        const row = headers.map(h => escapeCsv((r[h] || '').toString().trim()));
+        lines.push(row.join(','));
+      }
+      return lines.join('\n');
+    }
+
+    function downloadCsvFile(filename, text) {
+      const bom = '\uFEFF';
+      const blob = new Blob([bom + text], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename.endsWith('.csv') ? filename : `${filename}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 0);
+    }
+
+    if (downloadCsvBtn) {
+      downloadCsvBtn.addEventListener('click', () => {
+        const csv = buildFilteredCsv();
+        if (!csv.trim()) {
+          alert('No records to export.');
+          return;
+        }
+        downloadCsvFile('students_filtered.csv', csv);
+      });
+    }
+
+    // === Filter helpers: single-active dropdown, clickable labels in modal ===
+    function setSelectValue(sel, value) {
+      const exists = Array.from(sel.options).some(o => o.value === value);
+      if (!exists) {
+        const o = document.createElement('option');
+        o.value = value;
+        o.textContent = value;
+        sel.appendChild(o);
+      }
+      sel.value = value;
+    }
+
+    function resetFiltersExcept(keepSel) {
+      [filterTeacher, filterRoom, filterBus, filterVideo].forEach(s => {
+        if (s && s !== keepSel) s.value = '';
+      });
+    }
+
+    function bindFilterEvents() {
+      const selects = [filterTeacher, filterRoom, filterBus, filterVideo].filter(Boolean);
+      for (const sel of selects) {
+        try { sel.removeEventListener('change', handleFilterChange); } catch (e) {}
+        sel.addEventListener('change', handleFilterChange);
+      }
+    }
+
+    function handleFilterChange(e) {
+      const sel = e.currentTarget;
+      resetFiltersExcept(sel);
+      applyFiltersAndSearch();
+    }
+
+    kv.addEventListener('click', (e) => {
+      const div = e.target.closest('div');
+      if (!div || !kv.contains(div)) return;
+
+      const label = div.textContent.trim().toLowerCase();
+      const valueDiv = div.nextElementSibling;
+      if (!valueDiv) return;
+
+      const value = valueDiv.textContent.trim();
+      let targetSel = null;
+
+      if (label === 'teacher ic' || label === 'teacher') {
+        targetSel = filterTeacher;
+      } else if (label === 'room' || label === 'group/rooming' || label === 'room number') {
+        targetSel = filterRoom;
+      } else if (label === 'bus') {
+        targetSel = filterBus;
+      } else if (label === 'video group' || label === 'video') {
+        targetSel = filterVideo;
+      }
+
+      if (!targetSel || !targetSel.dataset.col) return;
+
+      resetFiltersExcept(targetSel);
+      setSelectValue(targetSel, value);
+      applyFiltersAndSearch();
+      closePerson();
+    });
+
+    // === Search / Reset wiring ===
+    searchEl.addEventListener('input', applyFiltersAndSearch);
+    clearSearchBtn.addEventListener('click', () => {
+      searchEl.value = '';
+      applyFiltersAndSearch();
+    });
+
+    resetFiltersBtn.addEventListener('click', () => {
+      searchEl.value = '';
+      [filterTeacher, filterRoom, filterBus, filterVideo].forEach(s => s.value = '');
+      applyFiltersAndSearch();
+    });
+
+    // === Kickoff ===
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
