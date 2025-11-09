@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,42 +9,85 @@
       --bg:#f8fafc; --card:#ffffff; --text:#0f172a; --muted:#64748b; --brand:#2563eb;
       --border:#e2e8f0; --shadow:0 6px 24px rgba(2,6,23,.06),0 2px 8px rgba(2,6,23,.05);
     }
-    html,body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:var(--text);}
+    html,body{
+      margin:0;
+      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      background:var(--bg);
+      color:var(--text);
+    }
     .wrap{max-width:1100px;margin:32px auto;padding:0 16px;}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);}
-    .toolbar{display:grid;gap:12px;grid-template-columns:1.5fr repeat(4,1fr);padding:16px;align-items:center;}
-    .toolbar h1{grid-column:1/-1;font-size:20px;margin:0 0 4px 0;}
-    .toolbar .search-row{grid-column:1 / -1;display:flex;gap:8px;flex-wrap:wrap;}
-    input[type="text"],select{padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px;background:#fff;}
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+    }
+    .toolbar{
+      display:grid;
+      gap:12px;
+      grid-template-columns:1.5fr repeat(4,1fr);
+      padding:16px;
+      align-items:center;
+    }
+    .toolbar h1{
+      grid-column:1/-1;
+      font-size:20px;
+      margin:0 0 4px 0;
+    }
+    .toolbar .search-row{
+      grid-column:1 / -1;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    input[type="text"],select{
+      padding:10px 12px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      font-size:14px;
+      background:#fff;
+    }
     select{min-width:160px;}
     .search{flex:1 1 280px;min-width:200px;}
-    button{appearance:none;border:1px solid var(--border);background:#fff;color:#0f172a;padding:10px 12px;border-radius:10px;font-size:14px;cursor:pointer;}
+    button{
+      appearance:none;
+      border:1px solid var(--border);
+      background:#fff;
+      color:#0f172a;
+      padding:10px 12px;
+      border-radius:10px;
+      font-size:14px;
+      cursor:pointer;
+    }
     button:hover{border-color:#cbd5e1;}
     .btn-primary{background:var(--brand);color:#fff;border-color:transparent;}
     .filters{display:flex;flex-wrap:wrap;gap:12px;}
-    /* Smaller dropdowns inside filters */
-    .filters select {
-      padding: 6px 10px;
-      font-size: 13px;
-      border-radius: 8px;
-      min-width: 120px;
+    .filters select{
+      padding:6px 10px;
+      font-size:13px;
+      border-radius:8px;
+      min-width:120px;
     }
 
-    /* Wide screens: keep filters in a single row, align with actions */
     @media (min-width: 900px) {
       .filters {
-        grid-column: 1 / span 4;   /* span first 4 grid columns */
-        flex-wrap: nowrap;         /* force single row */
-        gap: 8px;                  /* slightly tighter spacing */
+        grid-column: 1 / span 4;
+        flex-wrap: nowrap;
+        gap: 8px;
         align-items: center;
       }
       .actions {
-        grid-column: 5 / span 1;   /* actions sit to the right */
-        width: auto;               /* avoid stretching */
+        grid-column: 5 / span 1;
+        width: auto;
       }
     }
 
-    .actions{display:flex;gap:8px;justify-content:flex-end;width:100%;}
+    .actions{
+      display:flex;
+      gap:8px;
+      justify-content:flex-end;
+      width:100%;
+    }
     .table-wrap{overflow:auto;border-top:1px solid var(--border);}
     table{width:100%;border-collapse:separate;border-spacing:0;}
     thead th{
@@ -60,20 +102,61 @@
       text-align:left;
       cursor:pointer;
     }
-    tbody td{padding:12px;border-bottom:1px solid var(--border);color:#0f172a;}
+    tbody td{
+      padding:12px;
+      border-bottom:1px solid var(--border);
+      color:#0f172a;
+    }
     tbody tr{background:#fff;}
     tbody tr:hover{background:#f8fafc;}
-    .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;background:#eef2ff;color:#3730a3;}
-    .modal{position:fixed;inset:0;display:none;place-items:center;background:rgba(15,23,42,.35);backdrop-filter:saturate(140%) blur(4px);z-index:10;}
+    .pill{
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:12px;
+      background:#eef2ff;
+      color:#3730a3;
+    }
+    .modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      place-items:center;
+      background:rgba(15,23,42,.35);
+      backdrop-filter:saturate(140%) blur(4px);
+      z-index:10;
+    }
     .modal.open{display:grid;}
-    .sheet{width:min(780px,calc(100% - 24px));background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;}
-    .sheet-header{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--border);}
+    .sheet{
+      width:min(780px,calc(100% - 24px));
+      background:#fff;
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .sheet-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:16px 18px;
+      border-bottom:1px solid var(--border);
+    }
     .sheet-body{padding:18px;}
-    .kv{display:grid;grid-template-columns:180px 1fr;gap:8px 16px;}
-    .kv div{padding:8px 0;border-bottom:1px dashed #e5e7eb;}
-    @media (max-width: 720px){ .toolbar{grid-template-columns:1fr;} .filters{flex-direction:column;} .kv{grid-template-columns:120px 1fr;} }
+    .kv{
+      display:grid;
+      grid-template-columns:180px 1fr;
+      gap:8px 16px;
+    }
+    .kv div{
+      padding:8px 0;
+      border-bottom:1px dashed #e5e7eb;
+    }
+    @media (max-width: 720px){
+      .toolbar{grid-template-columns:1fr;}
+      .filters{flex-direction:column;}
+      .kv{grid-template-columns:120px 1fr;}
+    }
 
-    /* Medium screens: mild shrink */
     @media (max-width: 900px) {
       html, body { font-size: 15px; }
       .toolbar h1 { font-size: 18px; }
@@ -84,12 +167,9 @@
       .sheet { width: min(720px, calc(100% - 20px)); }
     }
 
-    /* Small screens: stronger shrink */
     @media (max-width: 720px) {
       html, body { font-size: 14px; }
       .toolbar h1 { font-size: 17px; }
-      /* .toolbar { grid-template-columns: 1fr; } */ /* Already defined above */
-      /* .filters { flex-direction: column; gap: 8px; } */ /* Already defined above */
       input[type="text"], select { padding: 8px 10px; font-size: 12px; }
       select { min-width: 100px; }
       .search { min-width: 160px; }
@@ -99,12 +179,10 @@
       .pill { font-size: 12px; padding: 2px 6px; }
       .sheet-header { padding: 12px 14px; }
       .sheet-body { padding: 14px; }
-      /* .kv { grid-template-columns: 120px 1fr; } */ /* Already defined above */
       #status { font-size: 11px; }
       #avatar { width: 52px; height: 52px; }
     }
 
-    /* Very small screens: tight compact mode */
     @media (max-width: 480px) {
       html, body { font-size: 13px; }
       .toolbar h1 { font-size: 16px; }
@@ -120,7 +198,6 @@
       #avatar { width: 44px; height: 44px; }
     }
 
-    /* Ultra-small screens: minimal */
     @media (max-width: 360px) {
       html, body { font-size: 12px; }
       .toolbar h1 { font-size: 15px; }
@@ -150,8 +227,12 @@
           <button id="downloadCsv" class="btn-primary">Download</button>
         </div>
       </div>
-      <div class="table-wrap"><table id="grid"></table></div>
-      <div style="padding:12px 16px;font-size:12px;color:#64748b"><span id="status">Loading…</span></div>
+      <div class="table-wrap">
+        <table id="grid"></table>
+      </div>
+      <div style="padding:12px 16px;font-size:12px;color:#64748b">
+        <span id="status">Loading…</span>
+      </div>
     </div>
   </div>
 
@@ -167,179 +248,272 @@
         </div>
         <button id="closeModal" aria-label="Close">×</button>
       </div>
-      <div class="sheet-body"><div id="kv" class="kv"></div></div>
+      <div class="sheet-body">
+        <div id="kv" class="kv"></div>
+      </div>
     </div>
   </div>
 
   <script>
-    const DATA = [{"No.": "1", "Name": "CHERYL LAU EN HUI", "Group/Rooming": "1", "Room Type": "TRIPLE", "Teacher IC": "RIMIKO CHUAH LI MEI", "Bus": "2", "Gender": "F", "Video Group": "H", "Video Topic": "Day 4: Xingpu Experimental Middle School Day 1"}, {"No.": "2", "Name": "GAN MING HUI, JEMMA", "Group/Rooming": "1", "Room Type": "TRIPLE", "Teacher IC": "RIMIKO CHUAH LI MEI", "Bus": "2", "Gender": "F", "Video Group": "J", "Video Topic": "Day 6: Trip back + reflections."}, {"No.": "3", "Name": "ISABELLE NG JIA EN", "Group/Rooming": "1", "Room Type": "TRIPLE", "Teacher IC": "RIMIKO CHUAH LI MEI", "Bus": "2", "Gender": "F", "Video Group": "G", "Video Topic": "Day 3: Suzhou Industrial Park overview"}, {"No.": "4", "Name": "AMANDA WAN ZHENG MUN (WEN JINGWEN)", "Group/Rooming": "2", "Room Type": "TWIN", "Teacher IC": "RIMIKO CHUAH LI MEI", "Bus": "2", "Gender": "F", "Video Group": "F", "Video Topic": "Day 3: China Computer Federation"}, {"No.": "5", "Name": "ELLIE LOO YI HYUN (LU YIXUAN)", "Group/Rooming": "2", "Room Type": "TWIN", "Teacher IC": "RIMIKO CHUAH LI MEI", "Bus": "2", "Gender": "F", "Video Group": "D", "Video Topic": "Day 2: Harmony Times Square"}, {"No.": "6", "Name": "AMANDA YAP MANN YI", "Group/Rooming": "3", "Room Type": "TWIN", "Teacher IC": "RIMIKO CHUAH LI MEI", "Bus": "2", "Gender": "F", "Video Group": "A", "Video Topic": "Day 1: Shanghai to Suzhou, Pingjiang Road"}, {"No.": "7", "Name": "GRACE YEONG", "Group/Rooming": "3", "Room Type": "TWIN", "Teacher IC": "RIMIKO CHUAH LI MEI", "Bus": "2", "Gender": "F", "Video Group": "G", "Video Topic": "Day 3: Suzhou Industrial Park overview"}, {"No.": "8", "Name": "ANGEL TAN QIAN RUI", "Group/Rooming": "4", "Room Type": "TWIN", "Teacher IC": "TAN ZHEN ZHI", "Bus": "1", "Gender": "F", "Video Group": "C", "Video Topic": "Day 2: Suzhou Robotic Museum"}, {"No.": "9", "Name": "RENEE YONG HON MUN", "Group/Rooming": "4", "Room Type": "TWIN", "Teacher IC": "TAN ZHEN ZHI", "Bus": "1", "Gender": "F", "Video Group": "D", "Video Topic": "Day 2: Harmony Times Square"}, {"No.": "10", "Name": "CLARISA U JIE HUI (YU JIEHUI)", "Group/Rooming": "5", "Room Type": "TWIN", "Teacher IC": "TAN ZHEN ZHI", "Bus": "1", "Gender": "F", "Video Group": "J", "Video Topic": "Day 6: Trip back + reflections."}, {"No.": "11", "Name": "HENG ZI NING", "Group/Rooming": "5", "Room Type": "TWIN", "Teacher IC": "TAN ZHEN ZHI", "Bus": "1", "Gender": "F", "Video Group": "A", "Video Topic": "Day 1: Shanghai to Suzhou, Pingjiang Road"}, {"No.": "12", "Name": "CHEW SEE TING SHAUNA", "Group/Rooming": "6", "Room Type": "TWIN", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "F", "Video Topic": "Day 3: China Computer Federation"}, {"No.": "13", "Name": "GAY HSUAN SHING RACHEL (NI XUANQING)", "Group/Rooming": "6", "Room Type": "TWIN", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "G", "Video Topic": "Day 3: Suzhou Industrial Park overview"}, {"No.": "14", "Name": "CHLOE TYE LING SHAN (DAI LINGSHAN)", "Group/Rooming": "7", "Room Type": "TWIN", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "B", "Video Topic": "Day 2: Suzhou S&T Museum for Youth"}, {"No.": "15", "Name": "YONG JIA ZHEN", "Group/Rooming": "7", "Room Type": "TWIN", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "A", "Video Topic": "Day 1: Shanghai to Suzhou, Pingjiang Road"}, {"No.": "16", "Name": "CHOI YUN RU", "Group/Rooming": "8", "Room Type": "TRIPLE", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "C", "Video Topic": "Day 2: Suzhou Robotic Museum"}, {"No.": "17", "Name": "ISABELLE SOO EN QIN", "Group/Rooming": "8", "Room Type": "TRIPLE", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "A", "Video Topic": "Day 1: Shanghai to Suzhou, Pingjiang Road"}, {"No.": "18", "Name": "THE KE ING, MICHELLE TEDDYATMAJA", "Group/Rooming": "8", "Room Type": "TRIPLE", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "J", "Video Topic": "Day 6: Trip back + reflections."}, {"No.": "19", "Name": "DHWANI SRINIVASAN", "Group/Rooming": "9", "Room Type": "TWIN", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "H", "Video Topic": "Day 4: Xingpu Experimental Middle School Day 1"}, {"No.": "20", "Name": "SREEJITH HITA", "Group/Rooming": "9", "Room Type": "TWIN", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "C", "Video Topic": "Day 2: Suzhou Robotic Museum"}, {"No.": "21", "Name": "EMMA LEE SHYUAN EN", "Group/Rooming": "10", "Room Type": "TWIN", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "I", "Video Topic": "Day 5: Xingpu Experimental Middle School Day 2"}, {"No.": "22", "Name": "POH PAM (FU WENCI)", "Group/Rooming": "10", "Room Type": "TWIN", "Teacher IC": "TAN JENG SUAN", "Bus": "2", "Gender": "F", "Video Group": "B", "Video Topic": "Day 2: Suzhou S&T Museum for Youth"}, {"No.": "23", "Name": "CHONG SAKI", "Group/Rooming": "11", "Room Type": "TWIN", "Teacher IC": "PENG CHAI TIN", "Bus": "2", "Gender": "F", "Video Group": "I", "Video Topic": "Day 5: Xingpu Experimental Middle School Day 2"}, {"No.": "24", "Name": "BETRYS TANG HUI YI", "Group/Rooming": "11", "Room Type": "TWIN", "Teacher IC": "PENG CHAI TIN", "Bus": "2", "Gender": "F", "Video Group": "E", "Video Topic": "Day 3: Suzhou Nanotechnology Industry Innovation Center"}, {"No.": "25", "Name": "GOH RUI EN, AUDREY", "Group/Rooming": "12", "Room Type": "TWIN", "Teacher IC": "PENG CHAI TIN", "Bus": "2", "Gender": "F", "Video Group": "B", "Video Topic": "Day 2: Suzhou S&T Museum for Youth"}, {"No.": "26", "Name": "PEH EE HSUEN MEREDITHE (BAI YUXUAN)", "Group/Rooming": "12", "Room Type": "TWIN", "Teacher IC": "PENG CHAI TIN", "Bus": "2", "Gender": "F", "Video Group": "I", "Video Topic": "Day 5: Xingpu Experimental Middle School Day 2"}, {"No.": "27", "Name": "CHIA XIAO HUI, ANNE", "Group/Rooming": "13", "Room Type": "TWIN", "Teacher IC": "PENG CHAI TIN", "Bus": "2", "Gender": "F", "Video Group": "E", "Video Topic": "Day 3: Suzhou Nanotechnology Industry Innovation Center"}, {"No.": "28", "Name": "GRACE THAM NGA SUM (TAN YAXIN)", "Group/Rooming": "13", "Room Type": "TWIN", "Teacher IC": "PENG CHAI TIN", "Bus": "2", "Gender": "F", "Video Group": "D", "Video Topic": "Day 2: Harmony Times Square"}, {"No.": "29", "Name": "LEONG YEAN NENG (LIANG ENNING)", "Group/Rooming": "14", "Room Type": "TWIN", "Teacher IC": "LIM JIA QI JACQUELINE", "Bus": "1", "Gender": "F", "Video Group": "C", "Video Topic": "Day 2: Suzhou Robotic Museum"}, {"No.": "30", "Name": "VINUDI NIHINSA GUNASEKARA", "Group/Rooming": "14", "Room Type": "TWIN", "Teacher IC": "LIM JIA QI JACQUELINE", "Bus": "1", "Gender": "F", "Video Group": "F", "Video Topic": "Day 3: China Computer Federation"}, {"No.": "31", "Name": "SARAH KOI AI LIN", "Group/Rooming": "15", "Room Type": "TWIN", "Teacher IC": "LIM JIA QI JACQUELINE", "Bus": "1", "Gender": "F", "Video Group": "J", "Video Topic": "Day 6: Trip back + reflections."}, {"No.": "32", "Name": "SARAH SIEW MIN EN", "Group/Rooming": "15", "Room Type": "TWIN", "Teacher IC": "LIM JIA QI JACQUELINE", "Bus": "1", "Gender": "F", "Video Group": "E", "Video Topic": "Day 3: Suzhou Nanotechnology Industry Innovation Center"}, {"No.": "33", "Name": "THONG XUAN NING, KAEDY", "Group/Rooming": "16", "Room Type": "TWIN", "Teacher IC": "LIM JIA QI JACQUELINE", "Bus": "1", "Gender": "F", "Video Group": "H", "Video Topic": "Day 4: Xingpu Experimental Middle School Day 1"}, {"No.": "34", "Name": "XENIA ISLA LOY JADE XYEE", "Group/Rooming": "16", "Room Type": "TWIN", "Teacher IC": "LIM JIA QI JACQUELINE", "Bus": "1", "Gender": "F", "Video Group": "D", "Video Topic": "Day 2: Harmony Times Square"}, {"No.": "35", "Name": "TRAN THUC LINH", "Group/Rooming": "17", "Room Type": "TWIN", "Teacher IC": "LIM JIA QI JACQUELINE", "Bus": "1", "Gender": "F", "Video Group": "I", "Video Topic": "Day 5: Xingpu Experimental Middle School Day 2"}, {"No.": "36", "Name": "YANG ZI JING JESSICA", "Group/Rooming": "17", "Room Type": "TWIN", "Teacher IC": "LIM JIA QI JACQUELINE", "Bus": "1", "Gender": "F", "Video Group": "B", "Video Topic": "Day 2: Suzhou S&T Museum for Youth"}, {"No.": "37", "Name": "HOON TAI FONG", "Group/Rooming": "18", "Room Type": "TWIN", "Teacher IC": "TAN SENG KWANG", "Bus": "2", "Gender": "M", "Video Group": "D", "Video Topic": "Day 2: Harmony Times Square"}, {"No.": "38", "Name": "SEE KAI LUN ETHAN (XU KAILUN)", "Group/Rooming": "18", "Room Type": "TWIN", "Teacher IC": "TAN SENG KWANG", "Bus": "2", "Gender": "M", "Video Group": "E", "Video Topic": "Day 3: Suzhou Nanotechnology Industry Innovation Center"}, {"No.": "39", "Name": "LIM ZI IAN", "Group/Rooming": "19", "Room Type": "TWIN", "Teacher IC": "TAN SENG KWANG", "Bus": "2", "Gender": "M", "Video Group": "C", "Video Topic": "Day 2: Suzhou Robotic Museum"}, {"No.": "40", "Name": "SIM EE HEAN, MATTHIEU (SHEN YIXIAN)", "Group/Rooming": "19", "Room Type": "TWIN", "Teacher IC": "TAN SENG KWANG", "Bus": "2", "Gender": "M", "Video Group": "F", "Video Topic": "Day 3: China Computer Federation"}, {"No.": "41", "Name": "BRION OW EN RUI", "Group/Rooming": "20", "Room Type": "TWIN", "Teacher IC": "TAN SENG KWANG", "Bus": "2", "Gender": "M", "Video Group": "A", "Video Topic": "Day 1: Shanghai to Suzhou, Pingjiang Road"}, {"No.": "42", "Name": "TAN JIA RUI LUCAS (CHEN JIARUI)", "Group/Rooming": "20", "Room Type": "TWIN", "Teacher IC": "TAN SENG KWANG", "Bus": "2", "Gender": "M", "Video Group": "F", "Video Topic": "Day 3: China Computer Federation"}, {"No.": "43", "Name": "ANAKIN PANG SHAO EN", "Group/Rooming": "21", "Room Type": "TWIN", "Teacher IC": "LOW KIAN SEH", "Bus": "1", "Gender": "M", "Video Group": "G", "Video Topic": "Day 3: Suzhou Industrial Park overview"}, {"No.": "44", "Name": "DANZEL JOSHUA MARIARAJA", "Group/Rooming": "21", "Room Type": "TWIN", "Teacher IC": "LOW KIAN SEH", "Bus": "1", "Gender": "M", "Video Group": "J", "Video Topic": "Day 6: Trip back + reflections."}, {"No.": "45", "Name": "BRYCE CHOO YOU TENG", "Group/Rooming": "22", "Room Type": "TWIN", "Teacher IC": "LOW KIAN SEH", "Bus": "1", "Gender": "M", "Video Group": "I", "Video Topic": "Day 5: Xingpu Experimental Middle School Day 2"}, {"No.": "46", "Name": "LEONG YUI HAN LUCAS (LIANG YUHAN)", "Group/Rooming": "22", "Room Type": "TWIN", "Teacher IC": "LOW KIAN SEH", "Bus": "1", "Gender": "M", "Video Group": "G", "Video Topic": "Day 3: Suzhou Industrial Park overview"}, {"No.": "47", "Name": "RYAN CHEN ZI XI", "Group/Rooming": "23", "Room Type": "TWIN", "Teacher IC": "LOW KIAN SEH", "Bus": "1", "Gender": "M", "Video Group": "H", "Video Topic": "Day 4: Xingpu Experimental Middle School Day 1"}, {"No.": "48", "Name": "SO PAK YU", "Group/Rooming": "23", "Room Type": "TWIN", "Teacher IC": "LOW KIAN SEH", "Bus": "1", "Gender": "M", "Video Group": "B", "Video Topic": "Day 2: Suzhou S&T Museum for Youth"}, {"No.": "49", "Name": "JAVIER TAN LE XUAN", "Group/Rooming": "24", "Room Type": "TWIN", "Teacher IC": "LOW KIAN SEH", "Bus": "1", "Gender": "M", "Video Group": "H", "Video Topic": "Day 4: Xingpu Experimental Middle School Day 1"}, {"No.": "50", "Name": "TAI KAI XUAN", "Group/Rooming": "24", "Room Type": "TWIN", "Teacher IC": "LOW KIAN SEH", "Bus": "1", "Gender": "M", "Video Group": "E", "Video Topic": "Day 3: Suzhou Nanotechnology Industry Innovation Center"}];
+    // === CONFIG: your Google Sheet ===
+    const SHEET_ID = '1T2vjcb48ucUAlZL-9QIUa2FqyKpTvF5uGN9CC62GyYY';
+    const SHEET_GID = '0'; // tab gid
 
-    let headers=[],data=[],view=[];
-    let sortCol=null,sortDir=1;
+    // === State ===
+    let headers = [];
+    let data = [];
+    let view = [];
+    let sortCol = null;
+    let sortDir = 1;
 
-    const grid=document.getElementById('grid'),
-          statusEl=document.getElementById('status'),
-          searchEl=document.getElementById('search'),
-          clearSearchBtn=document.getElementById('clearSearch'),
-          downloadCsvBtn=document.getElementById('downloadCsv'),
-          resetFiltersBtn=document.getElementById('resetFilters'),
-          filterTeacher=document.getElementById('filterTeacher'),
-          filterRoom=document.getElementById('filterRoom'),
-          filterBus=document.getElementById('filterBus'),
-          filterVideo=document.getElementById('filterVideo'),
-          modal=document.getElementById('modal'),
-          closeModal=document.getElementById('closeModal'),
-          kv=document.getElementById('kv'),
-          personName=document.getElementById('personName'),
-          personSubtitle=document.getElementById('personSubtitle'),
-          avatar=document.getElementById('avatar');
+    // === DOM ===
+    const grid = document.getElementById('grid');
+    const statusEl = document.getElementById('status');
+    const searchEl = document.getElementById('search');
+    const clearSearchBtn = document.getElementById('clearSearch');
+    const downloadCsvBtn = document.getElementById('downloadCsv');
+    const resetFiltersBtn = document.getElementById('resetFilters');
+    const filterTeacher = document.getElementById('filterTeacher');
+    const filterRoom = document.getElementById('filterRoom');
+    const filterBus = document.getElementById('filterBus');
+    const filterVideo = document.getElementById('filterVideo');
+    const modal = document.getElementById('modal');
+    const closeModal = document.getElementById('closeModal');
+    const kv = document.getElementById('kv');
+    const personName = document.getElementById('personName');
+    const personSubtitle = document.getElementById('personSubtitle');
+    const avatar = document.getElementById('avatar');
 
-    function init(){
-      data = DATA;
-      headers = data.length ? Object.keys(data[0]) : [];
-      // Remove "No" / "No." from headers
-      headers = headers.filter(h => !/^no\.?$/i.test(h));
-      view = data.slice();
-      buildFilters();
-      bindFilterEvents(); // enforce single-active filter per dropdown
-      applyFiltersAndSearch();
+    // === Load from Google Sheet (gviz JSON) ===
+    async function loadDataFromSheet() {
+      const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?`;
+      const url = `${base}tqx=out:json&gid=${SHEET_GID}`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error('HTTP ' + res.status);
+      }
+      const text = await res.text();
+
+      // Strip JSONP wrapper: google.visualization.Query.setResponse(...)
+      const jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+      const json = JSON.parse(jsonStr);
+
+      const cols = json.table.cols.map(c => (c.label || c.id || '').trim());
+
+      const rows = json.table.rows.map(row => {
+        const obj = {};
+        cols.forEach((colName, i) => {
+          if (!colName) return;
+          const cell = row.c[i];
+          obj[colName] = (cell && cell.v != null) ? cell.v : '';
+        });
+        return obj;
+      });
+
+      // Filter out completely empty rows (e.g. trailing blanks)
+      return rows.filter(r =>
+        Object.values(r).some(v => v !== '' && v !== null && v !== undefined)
+      );
     }
 
-    function buildFilters(){
+    async function init() {
+      try {
+        statusEl.textContent = 'Loading from Google Sheet…';
+
+        data = await loadDataFromSheet();
+        if (!data.length) {
+          throw new Error('No data rows returned from sheet');
+        }
+
+        headers = Object.keys(data[0]) || [];
+
+        // Remove "No" / "No." if present
+        headers = headers.filter(h => !/^no\.?$/i.test(h));
+
+        view = data.slice();
+        buildFilters();
+        bindFilterEvents();
+        applyFiltersAndSearch();
+
+        statusEl.textContent =
+          `${view.length} of ${data.length} records shown (live from Google Sheet)`;
+      } catch (err) {
+        console.error('Sheet load error:', err);
+        statusEl.textContent =
+          '⚠️ Unable to load from Google Sheet. Check sharing settings (Anyone with the link can view).';
+      }
+    }
+
+    // === Filters & Search ===
+    function buildFilters() {
       const teacherCol = findColumn(['teacher ic','teacher']);
-      const roomCol    = findColumn(['room number','group/rooming','room']); // fallback to Group/Rooming if no Room Number
+      const roomCol    = findColumn(['room number','group/rooming','room']);
       const busCol     = findColumn(['bus']);
       const videoCol   = findColumn(['video group','video']);
+
       populateSelect(filterTeacher, teacherCol, 'Teacher');
-      populateSelect(filterRoom, roomCol, 'Room');
-      populateSelect(filterBus, busCol, 'Bus');
-      populateSelect(filterVideo, videoCol, 'Video Group');
+      populateSelect(filterRoom,    roomCol,    'Room');
+      populateSelect(filterBus,     busCol,     'Bus');
+      populateSelect(filterVideo,   videoCol,   'Video Group');
     }
 
-    function findColumn(candidates){
+    function findColumn(candidates) {
       const lower = headers.map(h => [h, h.toLowerCase()]);
-      for(const cand of candidates){
-        const hit = lower.find(([orig,lo]) => lo === cand);
-        if(hit) return hit[0];
+      for (const cand of candidates) {
+        const hit = lower.find(([orig, lo]) => lo === cand);
+        if (hit) return hit[0];
       }
-      for(const cand of candidates){
-        const hit = lower.find(([orig,lo]) => lo.includes(cand));
-        if(hit) return hit[0];
+      for (const cand of candidates) {
+        const hit = lower.find(([orig, lo]) => lo.includes(cand));
+        if (hit) return hit[0];
       }
       return null;
     }
 
-    function populateSelect(sel, col, label){
+    function populateSelect(sel, col, label) {
       sel.innerHTML = `<option value="">${label}</option>`;
       sel.disabled = !col;
       sel.dataset.col = col || '';
-      if(!col) return;
-      const values = [...new Set(data.map(r => (r[col]||'').toString().trim()).filter(Boolean))]
-        .sort((a,b)=>a.localeCompare(b, undefined, {numeric:true, sensitivity:'base'}));
-      for(const v of values){
-        const o=document.createElement('option');
-        o.value=v; o.textContent=v; sel.appendChild(o);
+      if (!col) return;
+
+      const values = [...new Set(
+        data.map(r => (r[col] || '').toString().trim()).filter(Boolean)
+      )].sort((a,b)=>a.localeCompare(b, undefined, {numeric:true, sensitivity:'base'}));
+
+      for (const v of values) {
+        const o = document.createElement('option');
+        o.value = v;
+        o.textContent = v;
+        sel.appendChild(o);
       }
     }
 
-    function applyFiltersAndSearch(){
-      const q=searchEl.value.trim().toLowerCase();
-      const filters=[filterTeacher,filterRoom,filterBus,filterVideo].filter(s=>s && s.dataset.col);
-      view=data.filter(r=>{
-        const matchSearch=!q||headers.some(h=>(r[h]||'').toString().toLowerCase().includes(q));
-        if(!matchSearch) return false;
-        for(const f of filters){
-          const col=f.dataset.col,val=f.value;
-          if(val && (r[col]||'').toString().trim()!==val) return false;
+    function applyFiltersAndSearch() {
+      if (!data.length) return;
+      const q = searchEl.value.trim().toLowerCase();
+      const filters = [filterTeacher, filterRoom, filterBus, filterVideo]
+        .filter(s => s && s.dataset.col);
+
+      view = data.filter(r => {
+        const matchSearch = !q || headers.some(h =>
+          (r[h] || '').toString().toLowerCase().includes(q)
+        );
+        if (!matchSearch) return false;
+
+        for (const f of filters) {
+          const col = f.dataset.col;
+          const val = f.value;
+          if (val && (r[col] || '').toString().trim() !== val) return false;
         }
         return true;
       });
+
       sortAndRender();
-      statusEl.textContent=`${view.length} of ${data.length} records shown`;
+      statusEl.textContent =
+        `${view.length} of ${data.length} records shown (live from Google Sheet)`;
     }
 
-    function sortAndRender(){
-      if(sortCol){
-        view.sort((a,b)=>{
-          const av=(a[sortCol]||'').toString(), bv=(b[sortCol]||'').toString();
-          const an=parseFloat(av.replace(/[^0-9.-]/g,'')), bn=parseFloat(bv.replace(/[^0-9.-]/g,''));
-          const num=!isNaN(an)&&!isNaN(bn);
-          return (num? an-bn : av.localeCompare(bv, undefined, {numeric:true, sensitivity:'base'})) * sortDir;
+    // === Sorting & Table Render ===
+    function sortAndRender() {
+      if (sortCol) {
+        view.sort((a,b) => {
+          const av = (a[sortCol] || '').toString();
+          const bv = (b[sortCol] || '').toString();
+          const an = parseFloat(av.replace(/[^0-9.-]/g,''));
+          const bn = parseFloat(bv.replace(/[^0-9.-]/g,''));
+          const num = !isNaN(an) && !isNaN(bn);
+          return (num ? an - bn : av.localeCompare(bv, undefined, {numeric:true, sensitivity:'base'})) * sortDir;
         });
       }
       renderTable();
     }
 
-    function renderTable(){
-      // Hide "Video Topic" from table display only
+    function renderTable() {
       const displayHeaders = headers.filter(h => !/^video topic$/i.test(h));
-      
-      const thead=document.createElement('thead');
-      const trh=document.createElement('tr');
-      displayHeaders.forEach(h=>{
-        const th=document.createElement('th');
-        th.dataset.col=h;
-        const isSorted = sortCol===h;
-        const ind = isSorted ? (sortDir===1 ? ' ▲' : ' ▼') : '';
+
+      const thead = document.createElement('thead');
+      const trh = document.createElement('tr');
+
+      displayHeaders.forEach(h => {
+        const th = document.createElement('th');
+        th.dataset.col = h;
+        const isSorted = sortCol === h;
+        const ind = isSorted ? (sortDir === 1 ? ' ▲' : ' ▼') : '';
         const label = h === 'Group/Rooming' ? 'Room' : h;
         th.textContent = label + ind;
-        th.onclick=()=>{
-          if(sortCol===h){ sortDir = -sortDir; } else { sortCol = h; sortDir = 1; }
+        th.onclick = () => {
+          if (sortCol === h) {
+            sortDir = -sortDir;
+          } else {
+            sortCol = h;
+            sortDir = 1;
+          }
           sortAndRender();
         };
-        trh.append(th);
+        trh.appendChild(th);
       });
-      thead.append(trh);
-      
-      const tbody=document.createElement('tbody');
-      view.forEach(r=>{
-        const tr=document.createElement('tr');
-        tr.onclick=()=>openPerson(r);
-        displayHeaders.forEach(h=>{
-          const td=document.createElement('td');
-          const val=r[h]||'';
-          if(["Gender","Bus","Group","Group/Rooming","Room","Room Type","Video Group"].includes(h)){
-            const tag=document.createElement('span'); tag.className='pill'; tag.textContent=val; td.append(tag);
-          } else { td.textContent=val; }
-          tr.append(td);
+
+      thead.appendChild(trh);
+
+      const tbody = document.createElement('tbody');
+      view.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.onclick = () => openPerson(r);
+        displayHeaders.forEach(h => {
+          const td = document.createElement('td');
+          const val = r[h] || '';
+          if (["Gender","Bus","Group","Group/Rooming","Room","Room Type","Video Group"].includes(h)) {
+            const tag = document.createElement('span');
+            tag.className = 'pill';
+            tag.textContent = val;
+            td.appendChild(tag);
+          } else {
+            td.textContent = val;
+          }
+          tr.appendChild(td);
         });
-        tbody.append(tr);
+        tbody.appendChild(tr);
       });
-      grid.innerHTML='';
-      grid.append(thead,tbody);
+
+      grid.innerHTML = '';
+      grid.appendChild(thead);
+      grid.appendChild(tbody);
     }
 
-    function openPerson(r){
-      const nameKey=headers.find(h=>/^name$/i.test(h))||headers[0];
-      const subKey=headers.find(h=>/(group\/rooming|room|teacher ic|video group)/i);
-      personName.textContent=r[nameKey]||'(No name)';
-      personSubtitle.textContent=subKey?`${subKey}: ${r[subKey]}`:'';
-      avatar.textContent=(r[nameKey]||'').split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase();
-      kv.innerHTML='';
-      headers.forEach(h=>{ kv.innerHTML += `<div>${h}</div><div>${r[h]||''}</div>`; });
-      modal.classList.add('open'); modal.setAttribute('aria-hidden','false');
-    }
-    function closePerson(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
-    modal.onclick=e=>{ if(e.target===modal) closePerson(); };
-    closeModal.onclick=closePerson;
+    // === Modal / Detail View ===
+    function openPerson(r) {
+      const nameKey = headers.find(h => /^name$/i.test(h)) || headers[0];
+      const subKey = headers.find(h => /(group\/rooming|room|teacher ic|video group)/i);
 
-    searchEl.addEventListener('input',applyFiltersAndSearch);
-    clearSearchBtn.addEventListener('click',()=>{ searchEl.value=''; applyFiltersAndSearch(); });
-    [filterTeacher,filterRoom,filterBus,filterVideo].forEach(s=> s.addEventListener('change', applyFiltersAndSearch));
-    resetFiltersBtn.addEventListener('click',()=>{ searchEl.value=''; [filterTeacher,filterRoom,filterBus,filterVideo].forEach(s=> s.value=''); applyFiltersAndSearch(); });
-    // Remove stale Apply listener to avoid pre-init errors
-    // refreshBtn.addEventListener('click',applyFiltersAndSearch);
-    if (downloadCsvBtn) {
-      downloadCsvBtn.addEventListener('click', () => {
-        const csv = buildFilteredCsv();
-        if (!csv.trim()) { alert('No records to export.'); return; }
-        downloadCsvFile('students_filtered.csv', csv);
+      personName.textContent = r[nameKey] || '(No name)';
+      personSubtitle.textContent = subKey ? `${subKey}: ${r[subKey]}` : '';
+      avatar.textContent = (r[nameKey] || '')
+        .split(/\s+/)
+        .map(x => x[0])
+        .slice(0,2)
+        .join('')
+        .toUpperCase();
+
+      kv.innerHTML = '';
+      headers.forEach(h => {
+        kv.innerHTML += `<div>${h}</div><div>${r[h] || ''}</div>`;
       });
+
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden','false');
     }
 
-    init();
+    function closePerson() {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+    }
 
+    modal.addEventListener('click', e => {
+      if (e.target === modal) closePerson();
+    });
+    closeModal.addEventListener('click', closePerson);
 
+    // === CSV Export (current filtered view) ===
     function escapeCsv(value) {
       if (value === null || value === undefined) return '';
       const v = String(value).replace(/"/g, '""');
@@ -347,18 +521,20 @@
     }
 
     function buildFilteredCsv() {
+      if (!headers.length) return '';
       const headerLabels = headers.map(h => h === 'Group/Rooming' ? 'Room' : h);
       const lines = [];
-      if (headerLabels.length) lines.push(headerLabels.map(escapeCsv).join(','));
+      lines.push(headerLabels.map(escapeCsv).join(','));
+
       for (const r of view) {
-        const row = headers.map(h => escapeCsv((r[h]||'').toString().trim()));
+        const row = headers.map(h => escapeCsv((r[h] || '').toString().trim()));
         lines.push(row.join(','));
       }
       return lines.join('\n');
     }
 
     function downloadCsvFile(filename, text) {
-      const bom = '\uFEFF'; // improve Excel/Safari handling
+      const bom = '\uFEFF';
       const blob = new Blob([bom + text], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -372,157 +548,93 @@
       }, 0);
     }
 
-    function getTargetTable() {
-        // Prefer a known ID; otherwise fall back to the first table
-        return document.querySelector('#student-table') || document.querySelector('table');
-    }
-
-    function getVisibleRows(table) {
-        const rows = Array.from(table.querySelectorAll('tbody tr'));
-        return rows.filter(row => {
-            const style = window.getComputedStyle(row);
-            return !row.hidden &&
-                style.display !== 'none' &&
-                style.visibility !== 'hidden' &&
-                row.offsetParent !== null;
-        });
-    }
-
-    function getHeaders(table) {
-        const ths = Array.from(table.querySelectorAll('thead th'));
-        let headers = ths.map(th => th.textContent.trim());
-        if (headers.length === 0) {
-            // Fallback: synthesize headers based on first row cell count
-            const firstRow = table.querySelector('tbody tr');
-            if (firstRow) {
-                const count = firstRow.children.length;
-                headers = Array.from({ length: count }, (_, i) => `Column ${i + 1}`);
-            }
+    if (downloadCsvBtn) {
+      downloadCsvBtn.addEventListener('click', () => {
+        const csv = buildFilteredCsv();
+        if (!csv.trim()) {
+          alert('No records to export.');
+          return;
         }
-        return headers;
+        downloadCsvFile('students_filtered.csv', csv);
+      });
     }
 
-    function buildCsv(table) {
-        const headers = getHeaders(table);
-        const visibleRows = getVisibleRows(table);
-
-        const lines = [];
-        if (headers.length) {
-            lines.push(headers.map(escapeCsv).join(','));
-        }
-
-        for (const row of visibleRows) {
-            const cells = Array.from(row.children).map(td => escapeCsv(td.textContent.trim()));
-            lines.push(cells.join(','));
-        }
-
-        return lines.join('\n');
-    }
-
-    function downloadCsv(filename, csvText) {
-        const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => {
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }, 0);
-    }
-
-    const btn = document.getElementById('downloadCsvBtn');
-    if (btn) {
-        btn.addEventListener('click', function () {
-            const table = getTargetTable();
-            if (!table) {
-                alert('No table found to export. Please ensure the list is in a <table>.');
-                return;
-            }
-            const csv = buildCsv(table);
-            if (!csv.trim()) {
-                alert('No visible rows to export.');
-                return;
-            }
-            downloadCsv('students_filtered.csv', csv);
-        });
-    };
-
-
-
-// Ensure a select has the given value; add the option if missing
-function setSelectValue(sel, value) {
-    const exists = Array.from(sel.options).some(o => o.value === value);
-    if (!exists) {
+    // === Filter helpers: single-active dropdown, clickable labels in modal ===
+    function setSelectValue(sel, value) {
+      const exists = Array.from(sel.options).some(o => o.value === value);
+      if (!exists) {
         const o = document.createElement('option');
         o.value = value;
         o.textContent = value;
         sel.appendChild(o);
+      }
+      sel.value = value;
     }
-    sel.value = value;
-}
 
-// Clear all dropdown filters except the one being changed
-function resetFiltersExcept(keepSel){
-    [filterTeacher, filterRoom, filterBus, filterVideo].forEach(s => {
+    function resetFiltersExcept(keepSel) {
+      [filterTeacher, filterRoom, filterBus, filterVideo].forEach(s => {
         if (s && s !== keepSel) s.value = '';
-    });
-    // If you also want search cleared on dropdown change, uncomment:
-    // searchEl.value = '';
-}
+      });
+    }
 
-// Bind dropdown change events to enforce single-active filter
-function bindFilterEvents(){
-    const selects = [filterTeacher, filterRoom, filterBus, filterVideo].filter(Boolean);
-
-    // If previously bound to applyFiltersAndSearch directly, remove that binding
-    for (const sel of selects){
-        try { sel.removeEventListener('change', applyFiltersAndSearch); } catch {}
+    function bindFilterEvents() {
+      const selects = [filterTeacher, filterRoom, filterBus, filterVideo].filter(Boolean);
+      for (const sel of selects) {
+        try { sel.removeEventListener('change', handleFilterChange); } catch (e) {}
         sel.addEventListener('change', handleFilterChange);
+      }
     }
-}
 
-// Handle a dropdown change: clear others, then apply filtering
-function handleFilterChange(e){
-    const sel = e.currentTarget;
-    resetFiltersExcept(sel);
-    applyFiltersAndSearch();
-}
+    function handleFilterChange(e) {
+      const sel = e.currentTarget;
+      resetFiltersExcept(sel);
+      applyFiltersAndSearch();
+    }
 
-// Make modal labels clickable to apply the corresponding filter
-kv.addEventListener('click', (e) => {
-    const div = e.target.closest('div');
-    if (!div || !kv.contains(div)) return;
+    kv.addEventListener('click', (e) => {
+      const div = e.target.closest('div');
+      if (!div || !kv.contains(div)) return;
 
-    // Treat only label clicks (left column) by matching known labels
-    const label = div.textContent.trim().toLowerCase();
-    const valueDiv = div.nextElementSibling;
-    if (!valueDiv) return;
+      const label = div.textContent.trim().toLowerCase();
+      const valueDiv = div.nextElementSibling;
+      if (!valueDiv) return;
 
-    const value = valueDiv.textContent.trim();
-    let targetSel = null;
+      const value = valueDiv.textContent.trim();
+      let targetSel = null;
 
-    if (label === 'teacher ic' || label === 'teacher') {
+      if (label === 'teacher ic' || label === 'teacher') {
         targetSel = filterTeacher;
-    } else if (label === 'room' || label === 'group/rooming' || label === 'room number') {
+      } else if (label === 'room' || label === 'group/rooming' || label === 'room number') {
         targetSel = filterRoom;
-    } else if (label === 'bus') {
+      } else if (label === 'bus') {
         targetSel = filterBus;
-    } else if (label === 'video group' || label === 'video') {
+      } else if (label === 'video group' || label === 'video') {
         targetSel = filterVideo;
-    }
+      }
 
-    if (!targetSel || !targetSel.dataset.col) return;
+      if (!targetSel || !targetSel.dataset.col) return;
 
-    resetFiltersExcept(targetSel);
-    setSelectValue(targetSel, value);
-    applyFiltersAndSearch();
+      resetFiltersExcept(targetSel);
+      setSelectValue(targetSel, value);
+      applyFiltersAndSearch();
+      closePerson();
+    });
 
-    // Close modal after applying the filter
-    modal.classList.remove('open');
-});
-    </script>
+    // === Search / Reset wiring ===
+    searchEl.addEventListener('input', applyFiltersAndSearch);
+    clearSearchBtn.addEventListener('click', () => {
+      searchEl.value = '';
+      applyFiltersAndSearch();
+    });
+
+    resetFiltersBtn.addEventListener('click', () => {
+      searchEl.value = '';
+      [filterTeacher, filterRoom, filterBus, filterVideo].forEach(s => s.value = '');
+      applyFiltersAndSearch();
+    });
+
+    // === Kickoff ===
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
 </body>
 </html>
